@@ -87,14 +87,29 @@
       clone.querySelector('.meta')?.remove();
       const sourceNodes = [...source.querySelectorAll('*')].filter(el => !el.closest('.title') && !el.closest('.meta'));
       const cloneNodes = [...clone.querySelectorAll('*')];
-      const props = ['display','width','max-width','height','margin','padding','font-family','font-size','font-weight','line-height','letter-spacing','color','background-color','text-align','text-decoration-line','text-decoration-color','text-decoration-thickness','text-underline-offset','border','border-radius','list-style-position'];
-      clone.style.cssText = 'max-width:100%;margin:0 auto;padding:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;';
+      // Do not copy computed pixel widths from the 430 px preview shell. Those
+      // fixed values make horizontal assets overflow WeChat's variable editor
+      // width. Keep typography and spacing, then make every block responsive.
+      const props = ['display','margin','padding','font-family','font-size','font-weight','line-height','letter-spacing','color','background-color','text-align','text-decoration-line','text-decoration-color','text-decoration-thickness','text-underline-offset','border','border-radius','list-style-position'];
+      clone.style.cssText = 'display:block;width:100%;max-width:100%;margin:0 auto;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;overflow-wrap:anywhere;';
       cloneNodes.forEach((node, i) => {
         const original = sourceNodes[i];
         if (!original) return;
         const computed = getComputedStyle(original);
         node.style.cssText = props.map(p => `${p}:${computed.getPropertyValue(p)}`).join(';');
-        if (node.tagName === 'IMG') node.src = new URL(original.getAttribute('src'), location.href).href;
+        node.style.boxSizing = 'border-box';
+        node.style.maxWidth = '100%';
+        if (node.tagName === 'IMG') {
+          node.src = new URL(original.getAttribute('src'), location.href).href;
+          node.style.display = 'block';
+          node.style.width = '100%';
+          node.style.maxWidth = '100%';
+          node.style.height = 'auto';
+          node.removeAttribute('width');
+          node.removeAttribute('height');
+        } else {
+          node.style.width = 'auto';
+        }
       });
       const html = clone.innerHTML;
       const text = clone.innerText;
