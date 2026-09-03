@@ -76,10 +76,18 @@
       <div class="foot">报名需经审核 · 具体信息以最终通知为准</div>
     </article>
   </main>
+  <script>window.__REMOTE_PAYLOAD__=null;</script>
   <script>
     const statusBox = document.querySelector('#copy-status');
     const changeList = document.querySelector('#change-list');
     const changeCount = document.querySelector('#change-count');
+    const legacyShareButton = document.querySelector('#share-review');
+    const saveVersionButton = document.createElement('button');
+    saveVersionButton.id = 'save-version';
+    saveVersionButton.className = 'edit-only';
+    saveVersionButton.textContent = '保存为新版本';
+    legacyShareButton?.before(saveVersionButton);
+    if (legacyShareButton) { legacyShareButton.textContent = '生成超长备用链接'; legacyShareButton.classList.add('secondary'); }
     const reviewBlocks = [...document.querySelectorAll('article .title, article p, article h2, article li, article .caption, article .foot')];
     const originals = new Map();
     const changes = new Map();
@@ -89,8 +97,18 @@
     const normalizeHtml = value => value.replace(/\s+/g, ' ').replace(/> </g, '><').trim();
     const encodeReview = value => btoa(unescape(encodeURIComponent(JSON.stringify(value)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
     const decodeReview = value => JSON.parse(decodeURIComponent(escape(atob(value.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(value.length / 4) * 4, '=')))));
+    const apiBase = 'https://booming-review.sg.superbrain-ai.com';
+    const shortVersion = new URLSearchParams(location.search).get('review') || '';
     const sharedToken = location.hash.startsWith('#review=') ? location.hash.slice(8) : '';
-    let sharedPayload = null;
+    let sharedPayload = window.__REMOTE_PAYLOAD__;
+    if (!sharedPayload && shortVersion) {
+      try {
+        const request = new XMLHttpRequest();
+        request.open('GET', `${apiBase}/api/versions/${encodeURIComponent(shortVersion)}`, false);
+        request.send();
+        if (request.status === 200) sharedPayload = JSON.parse(request.responseText).payload;
+      } catch (error) { console.warn('短链接版本无法读取', error); }
+    }
     try { if (sharedToken) sharedPayload = decodeReview(sharedToken); } catch (error) { console.warn('交接链接内容无法读取', error); }
     const isSharedView = Boolean(sharedPayload);
     const sharedTextChanges = sharedPayload?.textChanges || sharedPayload?.changes || {};
@@ -312,6 +330,32 @@
       const link = `${base}#review=${encodeReview(payload)}`;
       await navigator.clipboard.writeText(link);
       statusBox.textContent = `交接链接已复制，包含 ${changes.size} 处修改`;
+    });
+    saveVersionButton.addEventListener('click', async () => {
+      if (!changes.size) { statusBox.textContent = '请先完成至少一处修改'; return; }
+      if ([...changes.values()].some(change => change.type === 'image' && change.src?.startsWith('blob:'))) {
+        statusBox.textContent = '本机同步图片需先换成可公开访问的 https 图片链接'; return;
+      }
+      let editKey = localStorage.getItem('booming-review-edit-key') || '';
+      if (!editKey) editKey = prompt('请输入云端保存密钥') || '';
+      if (!editKey) { statusBox.textContent = '未提供保存密钥，本机草稿仍然保留'; return; }
+      const payload = {
+        v: 2,
+        textChanges: Object.fromEntries([...changes].filter(([, change]) => change.type !== 'image').map(([id, change]) => [id, change.revisedHtml])),
+        imageChanges: Object.fromEntries([...changes].filter(([, change]) => change.type === 'image').map(([id, change]) => [id, change.status === 'deleted' ? { status: 'deleted' } : { status: 'replaced', src: change.src }]))
+      };
+      saveVersionButton.disabled = true;
+      statusBox.textContent = '正在保存云端版本…';
+      try {
+        const response = await fetch(`${apiBase}/api/versions`, {method:'POST',headers:{'content-type':'application/json','x-edit-key':editKey},body:JSON.stringify({payload})});
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || '保存失败');
+        localStorage.setItem('booming-review-edit-key', editKey);
+        await navigator.clipboard.writeText(result.url);
+        statusBox.textContent = `已保存 ${result.version}，短链接已复制`;
+      } catch (error) {
+        statusBox.textContent = `${error.message}；本机草稿仍然保留`;
+      } finally { saveVersionButton.disabled = false; }
     });
     document.querySelector('#copy-body').addEventListener('click', async () => {
       const source = document.querySelector('article');

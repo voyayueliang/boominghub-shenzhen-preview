@@ -1,0 +1,16 @@
+const http=require('http'),fs=require('fs'),path=require('path'),crypto=require('crypto');
+const root=__dirname,dataDir=path.join(root,'data'),versionsFile=path.join(dataDir,'versions.json');
+const port=Number(process.env.PORT||3000),editKey=process.env.BOOMING_EDIT_KEY||'',previewBase=process.env.PREVIEW_BASE_URL||'https://voyayueliang.github.io/boominghub-shenzhen-preview/';
+fs.mkdirSync(dataDir,{recursive:true});if(!fs.existsSync(versionsFile))fs.writeFileSync(versionsFile,'{}');
+const send=(res,status,body,type='application/json; charset=utf-8')=>{res.writeHead(status,{'content-type':type,'cache-control':'no-store'});res.end(type.startsWith('application/json')?JSON.stringify(body):body)};
+const readVersions=()=>JSON.parse(fs.readFileSync(versionsFile,'utf8'));
+const safeJson=value=>JSON.stringify(value).replace(/</g,'\\u003c');
+const cors={'access-control-allow-origin':'https://voyayueliang.github.io','access-control-allow-headers':'content-type,x-edit-key','access-control-allow-methods':'GET,POST,OPTIONS'};
+const json=(res,status,body)=>{res.writeHead(status,{'content-type':'application/json; charset=utf-8','cache-control':'no-store',...cors});res.end(JSON.stringify(body))};
+http.createServer((req,res)=>{const url=new URL(req.url,'http://localhost');
+ if(req.method==='OPTIONS'&&url.pathname.startsWith('/api/')){res.writeHead(204,cors);return res.end()}
+ const apiMatch=url.pathname.match(/^\/api\/versions\/([a-zA-Z0-9-]+)$/);if(req.method==='GET'&&apiMatch){const entry=readVersions()[apiMatch[1]];return entry?json(res,200,entry):json(res,404,{error:'版本不存在'})}
+ if(req.method==='POST'&&url.pathname==='/api/versions'){if(!editKey||req.headers['x-edit-key']!==editKey)return json(res,403,{error:'保存密钥不正确'});let raw='';req.on('data',c=>{raw+=c;if(raw.length>2000000)req.destroy()});req.on('end',()=>{try{const input=JSON.parse(raw);if(!input.payload||typeof input.payload!=='object')return json(res,400,{error:'版本数据无效'});const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z'),id=`sz-${stamp}-${crypto.randomBytes(2).toString('hex')}`,versions=readVersions();versions[id]={createdAt:new Date().toISOString(),payload:input.payload};fs.writeFileSync(versionsFile,JSON.stringify(versions,null,2));json(res,201,{version:id,url:`${previewBase}?review=${id}`})}catch(e){json(res,400,{error:'无法读取版本数据'})}});return}
+ const match=url.pathname.match(/^\/r\/([a-zA-Z0-9-]+)$/);if(match){const entry=readVersions()[match[1]];if(!entry)return send(res,404,'版本不存在','text/plain; charset=utf-8');const html=fs.readFileSync(path.join(root,'index.html'),'utf8').replace('window.__REMOTE_PAYLOAD__=null',`window.__REMOTE_PAYLOAD__=${safeJson(entry.payload)}`);return send(res,200,html,'text/html; charset=utf-8')}
+ const relative=url.pathname==='/'?'index.html':url.pathname.slice(1),file=path.normalize(path.join(root,relative));if(!file.startsWith(root)||!fs.existsSync(file)||fs.statSync(file).isDirectory())return send(res,404,'Not found','text/plain; charset=utf-8');const types={'.html':'text/html; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.css':'text/css','.js':'application/javascript'};res.writeHead(200,{'content-type':types[path.extname(file)]||'application/octet-stream'});fs.createReadStream(file).pipe(res)
+}).listen(port,'0.0.0.0',()=>console.log(`Booming review listening on ${port}`));
