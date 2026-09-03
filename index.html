@@ -29,12 +29,12 @@
     <article>
       <h1 class="title">做 AI 的，做硬件的，来一次软硬合谋｜Booming Hub 深圳招募</h1>
       <div class="meta">2026年9月 · <strong>蓝驰创投</strong></div>
-      <img class="hero" src="assets/hero.png" alt="软硬合谋主视觉">
+      <img class="hero" src="assets/hero.png" alt="软硬合谋主视觉" data-image-review-id="image-01">
 
       <p>2024 年 12 月，第一场 Booming Hub 在深圳落地。</p>
       <p>飞行相机、智能割草机、AI 眼镜、AI 玩具……8 位创业者和行业观察者，与 130 多位参与者一起讨论：</p>
       <p class="question">AI，正在怎样重新定义硬件？</p>
-      <div class="figure"><img src="assets/event-2024.png" alt="2024 Booming Hub 深圳活动现场"><div class="caption">2024 年 12 月，Booming Hub 在深圳举办</div></div>
+      <div class="figure"><img src="assets/event-2024.png" alt="2024 Booming Hub 深圳活动现场" data-image-review-id="image-02"><div class="caption">2024 年 12 月，Booming Hub 在深圳举办</div></div>
 
       <p>9 月 18 日，Booming Hub 再回深圳。</p>
       <p class="lead">两年后，我们关心的不再只是已经出现了哪些 AI 硬件，而是：下一款产品被定义之前，哪些人应该先坐到一起？</p>
@@ -50,8 +50,6 @@
       <p>这一次，我们想把更多时间交给参与者。现场将围绕不同产品方向分桌交流，从真实问题与实践经验出发，共同交换判断。</p>
       <p><strong>这个下午，你可以期待：</strong></p>
       <ul><li><strong>来自一线的实践与判断：</strong>从正在发生的产品实践与行业变化出发，看见 AI×硬件的新机会与新问题。</li><li><strong>与软硬两侧的一线实践者深度交流：</strong>遇见来自模型、产品、设计、工程、量产与供应链等不同环节的一线实践者。</li><li><strong>探讨真实问题：</strong>围绕参与者正在关注和推进的产品方向，讨论真实需求、产品场景与实践难题。</li><li><strong>让值得继续的连接自然发生：</strong>认识判断相近、能力互补的人，让现场交流有机会延续为下一次验证或合作。</li></ul>
-      <img class="figure" src="assets/info.png" alt="活动时间地点信息">
-
       <h2>我们想邀请谁？</h2>
       <p>这次 Booming Hub 深圳场，我们希望邀请来自 AI 与硬件两侧的一线实践者：</p>
       <ul><li>一类真正做过模型、算法、Agent、多模态交互、AI 产品或软件工程；</li><li>另一类做过产品定义、工业设计、工程开发、NPI、量产、供应链或全球交付。</li></ul>
@@ -74,7 +72,7 @@
       <p>如果你有一项擅长的能力、一个正在思考的产品方向，或者一个希望与软硬件伙伴共同拆解的真实问题，欢迎提交申请。</p>
       <p>由于现场规模有限，我们将结合申请者的实践经历、专业能力、关注方向与参与诉求进行筛选和分桌。</p>
       <p><strong>👇扫码或点击“阅读原文”提交申请，期待与你在深圳见面。</strong></p>
-      <img class="qr-card" src="assets/signup.png" alt="公开报名二维码">
+      <img class="qr-card" src="assets/signup.png" alt="公开报名二维码" data-image-review-id="image-04">
       <div class="foot">报名需经审核 · 具体信息以最终通知为准</div>
     </article>
   </main>
@@ -123,7 +121,7 @@
       if (typeof value === 'string') node.innerHTML = value;
     });
     const imageBlocks = [...document.querySelectorAll('article img')].map((image, index) => {
-      const id = `image-${String(index + 1).padStart(2, '0')}`;
+      const id = image.dataset.imageReviewId || `image-${String(index + 1).padStart(2, '0')}`;
       const originalSrc = image.getAttribute('src');
       const label = image.alt || `图片 ${index + 1}`;
       const shell = document.createElement('div');
