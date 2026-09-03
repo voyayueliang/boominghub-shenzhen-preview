@@ -145,6 +145,31 @@
       if (savedChange?.status === 'replaced' && savedChange.src) image.src = savedChange.src;
       return { id, image, shell, label, originalSrc };
     });
+    const posterBridgeDb = 'booming-activity-content-v1';
+    const posterBridgeStore = 'poster-exports';
+    function readPosterBridge(id) {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(posterBridgeDb, 1);
+        request.onupgradeneeded = () => {
+          if (!request.result.objectStoreNames.contains(posterBridgeStore)) request.result.createObjectStore(posterBridgeStore, { keyPath: 'id' });
+        };
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+          const db = request.result;
+          const transaction = db.transaction(posterBridgeStore, 'readonly');
+          const getRequest = transaction.objectStore(posterBridgeStore).get(id);
+          getRequest.onsuccess = () => resolve(getRequest.result);
+          getRequest.onerror = () => reject(getRequest.error);
+          transaction.oncomplete = () => db.close();
+        };
+      });
+    }
+    const blobToDataUrl = blob => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(blob);
+    });
     function renderChanges() {
       changes.clear();
       reviewBlocks.forEach(node => {
@@ -274,6 +299,10 @@
         statusBox.textContent = '请先完成至少一处修改';
         return;
       }
+      if ([...changes.values()].some(change => change.type === 'image' && change.src?.startsWith('blob:'))) {
+        statusBox.textContent = '本机同步海报可直接复制进公众号；跨电脑交接需先换成公开图片链接';
+        return;
+      }
       const payload = {
         v: 2,
         textChanges: Object.fromEntries([...changes].filter(([, change]) => change.type !== 'image').map(([id, change]) => [id, change.revisedHtml])),
@@ -325,11 +354,37 @@
         if (shell.classList.contains('is-image-deleted')) shell.remove();
         else shell.replaceWith(shell.querySelector('img'));
       });
+      await Promise.all([...clone.querySelectorAll('img')].map(async node => {
+        if (!node.src.startsWith('blob:')) return;
+        const response = await fetch(node.src);
+        node.src = await blobToDataUrl(await response.blob());
+      }));
       const html = clone.innerHTML;
       const text = clone.innerText;
       await navigator.clipboard.write([new ClipboardItem({'text/html': new Blob([html], {type:'text/html'}), 'text/plain': new Blob([text], {type:'text/plain'})})]);
       statusBox.textContent = '正文已复制，可粘贴到公众号后台';
     });
+    async function applyIncomingPoster() {
+      const params = new URLSearchParams(location.search);
+      const bridgeId = params.get('posterBridge');
+      if (!bridgeId || isSharedView) return;
+      try {
+        const record = await readPosterBridge(bridgeId);
+        if (!record?.blob) throw new Error('missing poster');
+        const targetId = params.get('slot') || record.slot;
+        const item = imageBlocks.find(entry => entry.id === targetId);
+        if (!item) throw new Error('missing slot');
+        item.image.src = URL.createObjectURL(record.blob);
+        item.image.dataset.bridgeId = bridgeId;
+        item.image.alt = record.posterName || item.image.alt;
+        item.shell.classList.remove('is-image-deleted');
+        renderChanges();
+        statusBox.textContent = `已从海报工作台同步「${record.posterName}」，可预览并复制整篇`;
+      } catch {
+        statusBox.textContent = '没有找到这张海报；请在同一浏览器重新点击“同步到公众号稿”';
+      }
+    }
+    void applyIncomingPoster();
   </script>
 </body>
 </html>
