@@ -29,7 +29,7 @@
     <article>
       <h1 class="title">做 AI 的，做硬件的，来一次软硬合谋｜Booming Hub 深圳招募</h1>
       <div class="meta">2026年9月 · <strong>蓝驰创投</strong></div>
-      <img class="hero" src="assets/wechat-latest-hero.jpg" alt="软硬合谋主视觉" data-image-review-id="image-01">
+      <img class="hero" src="assets/wechat-latest-hero.jpg" alt="软硬共创主视觉" data-image-review-id="image-01">
 
       <p>2024 年 12 月，第一场 Booming Hub 在深圳落地。</p>
       <p>飞行相机、智能割草机、AI 眼镜、AI 玩具……8 位创业者和行业观察者，与 130 多位参与者一起讨论：</p>
@@ -68,7 +68,7 @@
 
       <div class="divider"></div>
       <h2>📍活动信息</h2>
-      <div class="info"><p><strong>活动主题｜</strong>软硬合谋：寻找 AI×硬件的真需求与真场景</p><p><strong>活动日期｜</strong>9 月 18 日（周五）</p><p><strong>活动时间｜</strong>14:00</p><p><strong>活动地点｜</strong>深圳，具体场地待确认</p><p><strong>活动规模｜</strong>30 余人</p><p><strong>参与方式｜</strong>报名需经审核</p></div>
+      <div class="info"><p><strong>活动主题｜</strong>软硬合谋：寻找 AI×硬件的真需求与真场景</p><p><strong>活动日期｜</strong>9 月 18 日（周五）</p><p><strong>活动时间｜</strong>19:00–22:00</p><p><strong>活动地点｜</strong>深圳，具体场地待确认</p><p><strong>活动规模｜</strong>30 余人</p><p><strong>参与方式｜</strong>报名需经审核</p></div>
       <p>如果你有一项擅长的能力、一个正在思考的产品方向，或者一个希望与软硬件伙伴共同拆解的真实问题，欢迎提交申请。</p>
       <p>由于现场规模有限，我们将结合申请者的实践经历、专业能力、关注方向与参与诉求进行筛选和分桌。</p>
       <p><strong>👇扫码或点击“阅读原文”提交申请，期待与你在深圳见面。</strong></p>
@@ -364,27 +364,62 @@
       await navigator.clipboard.write([new ClipboardItem({'text/html': new Blob([html], {type:'text/html'}), 'text/plain': new Blob([text], {type:'text/plain'})})]);
       statusBox.textContent = '正文已复制，可粘贴到公众号后台';
     });
+    function applyPosterRecord(record, targetId) {
+      if (!record?.blob) throw new Error('missing poster');
+      const item = imageBlocks.find(entry => entry.id === (targetId || record.slot));
+      if (!item) throw new Error('missing slot');
+      item.image.src = URL.createObjectURL(record.blob);
+      item.image.dataset.bridgeId = record.id || '';
+      item.image.alt = record.posterName || item.image.alt;
+      item.shell.classList.remove('is-image-deleted');
+      renderChanges();
+      statusBox.textContent = `已从海报工作台同步「${record.posterName}」，可预览并复制整篇`;
+    }
     async function applyIncomingPoster() {
       const params = new URLSearchParams(location.search);
       const bridgeId = params.get('posterBridge');
       if (!bridgeId || isSharedView) return;
       try {
         const record = await readPosterBridge(bridgeId);
-        if (!record?.blob) throw new Error('missing poster');
-        const targetId = params.get('slot') || record.slot;
-        const item = imageBlocks.find(entry => entry.id === targetId);
-        if (!item) throw new Error('missing slot');
-        item.image.src = URL.createObjectURL(record.blob);
-        item.image.dataset.bridgeId = bridgeId;
-        item.image.alt = record.posterName || item.image.alt;
-        item.shell.classList.remove('is-image-deleted');
-        renderChanges();
-        statusBox.textContent = `已从海报工作台同步「${record.posterName}」，可预览并复制整篇`;
+        applyPosterRecord(record, params.get('slot'));
       } catch {
         statusBox.textContent = '没有找到这张海报；请在同一浏览器重新点击“同步到公众号稿”';
       }
     }
+    function acceptPosterTransfer() {
+      const params = new URLSearchParams(location.search);
+      const token = params.get('posterTransfer');
+      const sourceOrigin = params.get('sourceOrigin');
+      if (!token || !sourceOrigin || !window.opener || isSharedView) return;
+      const allowedOrigins = new Set([
+        'https://booming-poster-studio.voyayueliang.chatgpt.site',
+        'https://voyayueliang.github.io',
+        'http://localhost:3000',
+        'http://127.0.0.1:3000'
+      ]);
+      if (!allowedOrigins.has(sourceOrigin)) {
+        statusBox.textContent = '海报来源未获允许，请从正式海报编辑台重新同步';
+        return;
+      }
+      const handleTransfer = event => {
+        if (
+          event.source !== window.opener ||
+          event.origin !== sourceOrigin ||
+          event.data?.type !== 'booming-poster-transfer' ||
+          event.data?.token !== token
+        ) return;
+        window.removeEventListener('message', handleTransfer);
+        try {
+          applyPosterRecord(event.data.record, params.get('slot') || event.data.slot);
+        } catch {
+          statusBox.textContent = '海报已传入，但没有找到对应的公众号图片位置';
+        }
+      };
+      window.addEventListener('message', handleTransfer);
+      window.opener.postMessage({ type: 'booming-poster-ready', token }, sourceOrigin);
+    }
     void applyIncomingPoster();
+    acceptPosterTransfer();
   </script>
 </body>
 </html>
