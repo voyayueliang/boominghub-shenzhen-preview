@@ -371,6 +371,7 @@
       item.image.src = URL.createObjectURL(record.blob);
       item.image.dataset.bridgeId = record.id || '';
       item.image.alt = record.posterName || item.image.alt;
+      item.label = record.posterName || item.label;
       item.shell.classList.remove('is-image-deleted');
       renderChanges();
       statusBox.textContent = `已从海报工作台同步「${record.posterName}」，可预览并复制整篇`;
