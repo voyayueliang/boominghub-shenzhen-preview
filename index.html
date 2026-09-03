@@ -13,6 +13,7 @@
     .wechat-bar{height:48px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #f0f0f0;font-size:15px;font-weight:600;position:sticky;top:0;background:#fffc;backdrop-filter:blur(10px);z-index:2}.wechat-bar span{position:absolute;left:16px;font-size:24px;font-weight:400}
     article{padding:24px 22px 44px}.title{font-size:24px;line-height:1.42;font-weight:650;letter-spacing:-.2px;color:#191919;margin:2px 0 12px}.meta{font-size:14px;color:#8c8c8c;margin-bottom:22px}.meta strong{color:#576b95;font-weight:500;margin-left:8px}
     img{display:block;width:100%;height:auto}.hero{margin:0 0 26px}.figure{margin:25px 0}.caption{text-align:center;color:#a0a0a0;font-size:12px;margin-top:8px}
+    .image-edit-shell{position:relative;margin:25px 0}.image-edit-shell.image-shell-hero{margin:0 0 26px}.figure>.image-edit-shell{margin:0}.image-edit-shell>.hero,.image-edit-shell>.figure,.image-edit-shell>.qr-card{margin:0}.image-tools{position:absolute;z-index:3;right:9px;top:9px;display:flex;gap:6px;padding:6px;background:#fffffff2;border:1px solid #dfe3eb;border-radius:9px;box-shadow:0 4px 16px #18214a1f}.image-tools button{border:0;border-radius:6px;padding:6px 9px;background:#eef0ff;color:#021eaa;font-size:11px;font-weight:650;cursor:pointer}.image-tools button[data-image-action="delete"]{background:#fff0ef;color:#b33b32}.image-tools button[data-image-action="restore"]{background:#eef8ef;color:#29753a}.image-edit-shell.is-image-changed{outline:3px solid #e8bd36;outline-offset:3px}.image-deleted-placeholder{display:none;min-height:116px;align-items:center;justify-content:center;padding:26px;background:#fff8d8;border:1px dashed #d2a91e;color:#8a6500;font-size:13px;text-align:center}.image-edit-shell.is-image-deleted>img{display:none}.image-edit-shell.is-image-deleted>.image-deleted-placeholder{display:flex}.shared .image-tools{display:none}.shared .image-edit-shell.is-image-changed{box-shadow:inset 3px 0 #e8bd36;outline:0}.shared .image-deleted-placeholder{min-height:82px}
     p{font-size:16px;line-height:25.6px;letter-spacing:.544px;color:#7d7d7d;margin:0 0 24px;text-align:justify}strong{font-weight:700;color:#021eaa}h2{font-size:20px;line-height:25.6px;letter-spacing:.544px;color:#021eaa;font-weight:700;margin:42px 0 16px;padding:0;border:0;text-decoration-line:underline;text-decoration-color:#021eaa;text-decoration-thickness:1px;text-underline-offset:3px}h2:after{display:none}ul{padding-left:1.35em;margin:0 0 24px}li{font-size:16px;line-height:25.6px;letter-spacing:.544px;color:#7d7d7d;margin:0 0 10px}.question{font-size:20px;line-height:25.6px;letter-spacing:.544px;font-weight:700;margin:24px 0;color:#021eaa}.lead{font-size:16px;line-height:25.6px;letter-spacing:.544px;font-weight:700;color:#021eaa}.divider{height:1px;background:#efefef;margin:38px 0}.info{background:transparent;border-radius:0;padding:0;margin:24px 0}.info p{font-size:16px;margin-bottom:10px;text-align:left}.info p:last-child{margin-bottom:0}.info strong{color:#021eaa}.qr-card{margin-top:25px}.foot{margin-top:25px;color:#7d7d7d;font-size:13px;text-align:center}.source-badge{font-size:13px;color:#021eaa;letter-spacing:.544px;margin:0 0 12px;text-align:center}
     [contenteditable="true"]{border-radius:4px;outline:1px dashed transparent;transition:background .15s,outline-color .15s}[contenteditable="true"]:hover{outline-color:#aab3e8}[contenteditable="true"]:focus{outline:2px solid #1428d4;background:#f6f7ff}[contenteditable="true"].is-changed{background:#fff8d8;outline-color:#e8bd36}
     .review-intro{margin:0 0 12px;font-size:13px;line-height:1.7;color:#596174;text-align:left}.review-count{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid #eef0f4;border-bottom:1px solid #eef0f4;margin:14px 0}.review-count strong{font-size:20px;color:#1428d4}.change-list{display:grid;gap:10px}.empty-changes{padding:16px 12px;background:#f7f8fb;border-radius:8px;color:#7f8797;text-align:center}.change-card{border:1px solid #dfe3eb;border-radius:10px;padding:11px;background:#fff}.change-card b{font-size:12px;color:#1428d4;margin:0 0 7px}.change-label{font-size:11px;color:#9298a7;margin-top:6px}.change-text{font-size:12px;line-height:1.55;color:#353b49;white-space:pre-wrap;word-break:break-word}.change-old{text-decoration:line-through;color:#9b6a6a}.change-card button{margin-top:8px;border:0;border-radius:6px;padding:7px 9px;background:#eef0ff;color:#1428d4;font-weight:650;cursor:pointer}.review-tip{font-size:12px;color:#7f8797;margin-top:12px}
@@ -22,7 +23,7 @@
   </style>
 </head>
 <body>
-  <aside class="note"><span class="tag">公众号修订交接台</span><div class="edit-only"><b>直接在左侧正文上修改</b><p class="review-intro">样式和图片已锁定。选中文字后可以加粗或调整颜色；文字与格式变化都会进入修改清单。</p><div class="format-tools"><button type="button" data-format="bold"><strong>加粗 / 取消加粗</strong></button><button type="button" data-format="remove">清除局部格式</button><button type="button" data-color="#021eaa"><span class="color-dot" style="background:#021eaa"></span>品牌蓝</button><button type="button" data-color="#171717"><span class="color-dot" style="background:#171717"></span>正文黑</button><button type="button" data-color="#7d7d7d"><span class="color-dot" style="background:#7d7d7d"></span>正文灰</button></div><div class="format-note">先在正文中选中文字，再点击格式按钮。</div></div><div class="shared-only"><b>编辑伙伴执行视图</b><p class="review-intro">黄色位置是本轮修改。可逐条复制改后内容，也可复制整篇修订稿到公众号后台。</p></div><div class="review-count"><span>本轮修改</span><strong id="change-count">0</strong></div><div class="copy-actions"><button class="secondary" id="copy-title">复制文章标题</button><button id="copy-body">复制修订后正文</button><button id="copy-changes">复制全部修改清单</button><button class="edit-only" id="share-review">生成并复制交接链接</button></div><div class="copy-status" id="copy-status"></div><div id="change-list" class="change-list"><div class="empty-changes">还没有修改</div></div><div class="review-tip edit-only">发给编辑伙伴时只需发送“交接链接”，对方打开即可查看并复制。</div></aside>
+  <aside class="note"><span class="tag">公众号修订交接台</span><div class="edit-only"><b>直接在左侧正文上修改</b><p class="review-intro">文字可原地修改；选中文字可加粗或调色。把鼠标移到图片上，可替换、删除或恢复图片。所有变化都会进入修改清单。</p><div class="format-tools"><button type="button" data-format="bold"><strong>加粗 / 取消加粗</strong></button><button type="button" data-format="remove">清除局部格式</button><button type="button" data-color="#021eaa"><span class="color-dot" style="background:#021eaa"></span>品牌蓝</button><button type="button" data-color="#171717"><span class="color-dot" style="background:#171717"></span>正文黑</button><button type="button" data-color="#7d7d7d"><span class="color-dot" style="background:#7d7d7d"></span>正文灰</button></div><div class="format-note">替换图片时请粘贴可公开访问的 https 图片链接。</div></div><div class="shared-only"><b>编辑伙伴执行视图</b><p class="review-intro">黄色位置是本轮文字或图片修改。可逐条执行，也可复制整篇修订稿到公众号后台。</p></div><div class="review-count"><span>本轮修改</span><strong id="change-count">0</strong></div><div class="copy-actions"><button class="secondary" id="copy-title">复制文章标题</button><button id="copy-body">复制修订后正文</button><button id="copy-changes">复制全部修改清单</button><button class="edit-only" id="share-review">生成并复制交接链接</button></div><div class="copy-status" id="copy-status"></div><div id="change-list" class="change-list"><div class="empty-changes">还没有修改</div></div><div class="review-tip edit-only">发给编辑伙伴时只需发送“交接链接”，对方打开即可查看并复制。</div></aside>
   <main class="phone">
     <div class="wechat-bar"><span>‹</span>公众号文章预览</div>
     <article>
@@ -91,9 +92,11 @@
     const encodeReview = value => btoa(unescape(encodeURIComponent(JSON.stringify(value)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
     const decodeReview = value => JSON.parse(decodeURIComponent(escape(atob(value.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(value.length / 4) * 4, '=')))));
     const sharedToken = location.hash.startsWith('#review=') ? location.hash.slice(8) : '';
-    let sharedChanges = null;
-    try { if (sharedToken) sharedChanges = decodeReview(sharedToken).changes || {}; } catch (error) { console.warn('交接链接内容无法读取', error); }
-    const isSharedView = Boolean(sharedChanges);
+    let sharedPayload = null;
+    try { if (sharedToken) sharedPayload = decodeReview(sharedToken); } catch (error) { console.warn('交接链接内容无法读取', error); }
+    const isSharedView = Boolean(sharedPayload);
+    const sharedTextChanges = sharedPayload?.textChanges || sharedPayload?.changes || {};
+    const sharedImageChanges = sharedPayload?.imageChanges || {};
     if (isSharedView) document.body.classList.add('shared');
     const blockLabel = (node, index) => {
       if (node.matches('.title')) return '文章标题';
@@ -111,10 +114,38 @@
       node.spellcheck = true;
       originals.set(id, { html: node.innerHTML, text: cleanText(node.innerText), label: node.dataset.reviewLabel });
     });
-    const saved = isSharedView ? sharedChanges : JSON.parse(localStorage.getItem(storageKey) || '{}');
+    let storedDraft = {};
+    try { storedDraft = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch (error) { console.warn('本地草稿无法读取', error); }
+    const saved = isSharedView ? sharedTextChanges : (storedDraft.text || storedDraft);
+    const savedImages = isSharedView ? sharedImageChanges : (storedDraft.images || {});
     reviewBlocks.forEach(node => {
       const value = saved[node.dataset.reviewId];
       if (typeof value === 'string') node.innerHTML = value;
+    });
+    const imageBlocks = [...document.querySelectorAll('article img')].map((image, index) => {
+      const id = `image-${String(index + 1).padStart(2, '0')}`;
+      const originalSrc = image.getAttribute('src');
+      const label = image.alt || `图片 ${index + 1}`;
+      const shell = document.createElement('div');
+      shell.className = 'image-edit-shell';
+      if (image.classList.contains('hero')) shell.classList.add('image-shell-hero');
+      shell.dataset.imageId = id;
+      image.parentNode.insertBefore(shell, image);
+      shell.appendChild(image);
+      const placeholder = document.createElement('div');
+      placeholder.className = 'image-deleted-placeholder';
+      placeholder.textContent = `本轮删除：${label}`;
+      shell.appendChild(placeholder);
+      if (!isSharedView) {
+        const tools = document.createElement('div');
+        tools.className = 'image-tools';
+        tools.innerHTML = '<button type="button" data-image-action="replace">替换图片</button><button type="button" data-image-action="delete">删除图片</button><button type="button" data-image-action="restore">恢复原图</button>';
+        shell.appendChild(tools);
+      }
+      const savedChange = savedImages[id];
+      if (savedChange?.status === 'deleted') shell.classList.add('is-image-deleted');
+      if (savedChange?.status === 'replaced' && savedChange.src) image.src = savedChange.src;
+      return { id, image, shell, label, originalSrc };
     });
     function renderChanges() {
       changes.clear();
@@ -127,24 +158,77 @@
         node.classList.toggle('is-changed', changed);
         if (changed) changes.set(id, { id, label: original.label, original: original.text, revised, originalHtml: original.html, revisedHtml, formattingOnly: revised === original.text });
       });
+      imageBlocks.forEach(item => {
+        const deleted = item.shell.classList.contains('is-image-deleted');
+        const currentSrc = item.image.getAttribute('src');
+        const replaced = !deleted && currentSrc !== item.originalSrc;
+        item.shell.classList.toggle('is-image-changed', deleted || replaced);
+        if (deleted) changes.set(item.id, { id: item.id, type: 'image', label: item.label, original: item.originalSrc, revised: '删除图片', status: 'deleted' });
+        if (replaced) changes.set(item.id, { id: item.id, type: 'image', label: item.label, original: item.originalSrc, revised: currentSrc, status: 'replaced', src: currentSrc });
+      });
       changeCount.textContent = String(changes.size);
       if (!changes.size) {
         changeList.innerHTML = '<div class="empty-changes">还没有修改</div>';
         return;
       }
-      changeList.innerHTML = [...changes.values()].map(change => `<section class="change-card"><b>${change.id.replace('block-', '')}｜${escapeHtml(change.label)}</b><div class="change-label">原文</div><div class="change-text change-old">${escapeHtml(change.original)}</div><div class="change-label">改为</div><div class="change-text">${escapeHtml(change.revised)}</div>${change.formattingOnly || normalizeHtml(change.revisedHtml) !== normalizeHtml(escapeHtml(change.revised)) ? '<span class="format-flag">含加粗或颜色调整</span>' : ''}<button type="button" data-copy-id="${change.id}">复制改后内容</button></section>`).join('');
+      changeList.innerHTML = [...changes.values()].map(change => {
+        if (change.type === 'image') return `<section class="change-card"><b>${change.id.replace('image-', '图片 ')}｜${escapeHtml(change.label)}</b><div class="change-label">图片操作</div><div class="change-text">${change.status === 'deleted' ? '删除这张图片' : `替换为：${escapeHtml(change.src)}`}</div>${change.status === 'replaced' ? `<button type="button" data-copy-image-url="${escapeHtml(change.src)}">复制新图片链接</button>` : ''}</section>`;
+        return `<section class="change-card"><b>${change.id.replace('block-', '')}｜${escapeHtml(change.label)}</b><div class="change-label">原文</div><div class="change-text change-old">${escapeHtml(change.original)}</div><div class="change-label">改为</div><div class="change-text">${escapeHtml(change.revised)}</div>${change.formattingOnly || normalizeHtml(change.revisedHtml) !== normalizeHtml(escapeHtml(change.revised)) ? '<span class="format-flag">含加粗或颜色调整</span>' : ''}<button type="button" data-copy-id="${change.id}">复制改后内容</button></section>`;
+      }).join('');
     }
     function persistReview() {
-      const draft = Object.fromEntries(reviewBlocks.map(node => [node.dataset.reviewId, node.innerHTML]));
+      const draft = {
+        text: Object.fromEntries(reviewBlocks.map(node => [node.dataset.reviewId, node.innerHTML])),
+        images: Object.fromEntries(imageBlocks.map(item => {
+          const deleted = item.shell.classList.contains('is-image-deleted');
+          const src = item.image.getAttribute('src');
+          return [item.id, deleted ? { status: 'deleted' } : src !== item.originalSrc ? { status: 'replaced', src } : { status: 'original' }];
+        }))
+      };
       localStorage.setItem(storageKey, JSON.stringify(draft));
     }
     if (!isSharedView) reviewBlocks.forEach(node => node.addEventListener('input', () => { persistReview(); renderChanges(); }));
     changeList.addEventListener('click', async event => {
       const button = event.target.closest('[data-copy-id]');
-      if (!button) return;
-      const change = changes.get(button.dataset.copyId);
-      await copyRichContent(change.revisedHtml, change.revised);
-      statusBox.textContent = '这一处改后内容与格式已复制';
+      const imageButton = event.target.closest('[data-copy-image-url]');
+      if (imageButton) {
+        await navigator.clipboard.writeText(imageButton.dataset.copyImageUrl);
+        statusBox.textContent = '新图片链接已复制';
+      } else if (button) {
+        const change = changes.get(button.dataset.copyId);
+        await copyRichContent(change.revisedHtml, change.revised);
+        statusBox.textContent = '这一处改后内容与格式已复制';
+      }
+    });
+    document.querySelector('article').addEventListener('click', event => {
+      const button = event.target.closest('[data-image-action]');
+      if (!button || isSharedView) return;
+      const shell = button.closest('.image-edit-shell');
+      const item = imageBlocks.find(entry => entry.shell === shell);
+      if (!item) return;
+      if (button.dataset.imageAction === 'replace') {
+        const nextSrc = prompt('粘贴新的图片链接（需为可公开访问的 https 地址）', item.image.getAttribute('src'));
+        if (nextSrc === null) return;
+        const trimmed = nextSrc.trim();
+        if (!/^https:\/\//i.test(trimmed)) {
+          statusBox.textContent = '图片链接需要以 https:// 开头';
+          return;
+        }
+        item.image.src = trimmed;
+        item.shell.classList.remove('is-image-deleted');
+        statusBox.textContent = '图片已替换，并已加入修改清单';
+      }
+      if (button.dataset.imageAction === 'delete') {
+        item.shell.classList.add('is-image-deleted');
+        statusBox.textContent = '图片已标记删除，并已加入修改清单';
+      }
+      if (button.dataset.imageAction === 'restore') {
+        item.image.setAttribute('src', item.originalSrc);
+        item.shell.classList.remove('is-image-deleted');
+        statusBox.textContent = '图片已恢复为原图';
+      }
+      persistReview();
+      renderChanges();
     });
     let activeBlock = null;
     reviewBlocks.forEach(node => node.addEventListener('focus', () => { activeBlock = node; }));
@@ -180,7 +264,10 @@
         statusBox.textContent = '还没有修改内容';
         return;
       }
-      const text = [...changes.values()].map((change, index) => `${index + 1}. ${change.label}\n原文：${change.original}\n改为：${change.revised}${change.formattingOnly ? '\n格式：有加粗或颜色调整，请以交接页高亮位置为准' : ''}`).join('\n\n');
+      const text = [...changes.values()].map((change, index) => {
+        if (change.type === 'image') return `${index + 1}. ${change.label}\n图片操作：${change.status === 'deleted' ? '删除图片' : `替换图片\n新图片链接：${change.src}`}`;
+        return `${index + 1}. ${change.label}\n原文：${change.original}\n改为：${change.revised}${change.formattingOnly ? '\n格式：有加粗或颜色调整，请以交接页高亮位置为准' : ''}`;
+      }).join('\n\n');
       await navigator.clipboard.writeText(text);
       statusBox.textContent = `已复制 ${changes.size} 处修改，可直接发给编辑伙伴`;
     });
@@ -189,7 +276,11 @@
         statusBox.textContent = '请先完成至少一处修改';
         return;
       }
-      const payload = { v: 1, changes: Object.fromEntries([...changes].map(([id, change]) => [id, change.revisedHtml])) };
+      const payload = {
+        v: 2,
+        textChanges: Object.fromEntries([...changes].filter(([, change]) => change.type !== 'image').map(([id, change]) => [id, change.revisedHtml])),
+        imageChanges: Object.fromEntries([...changes].filter(([, change]) => change.type === 'image').map(([id, change]) => [id, change.status === 'deleted' ? { status: 'deleted' } : { status: 'replaced', src: change.src }]))
+      };
       const base = location.protocol === 'file:' ? 'https://voyayueliang.github.io/boominghub-shenzhen-preview/' : `${location.origin}${location.pathname}`;
       const link = `${base}#review=${encodeReview(payload)}`;
       await navigator.clipboard.writeText(link);
@@ -230,6 +321,11 @@
         } else {
           node.style.width = 'auto';
         }
+      });
+      clone.querySelectorAll('.image-tools,.image-deleted-placeholder').forEach(node => node.remove());
+      clone.querySelectorAll('.image-edit-shell').forEach(shell => {
+        if (shell.classList.contains('is-image-deleted')) shell.remove();
+        else shell.replaceWith(shell.querySelector('img'));
       });
       const html = clone.innerHTML;
       const text = clone.innerText;
